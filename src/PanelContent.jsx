@@ -1,15 +1,12 @@
-import React, { PropTypes } from 'react';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
-const PanelContent = React.createClass({
-  propTypes: {
-    prefixCls: PropTypes.string,
-    isActive: PropTypes.bool,
-    children: PropTypes.any,
-  },
+class PanelContent extends Component {
   shouldComponentUpdate(nextProps) {
     return this.props.isActive || nextProps.isActive;
-  },
+  }
+
   render() {
     this._isActived = this._isActived || this.props.isActive;
     if (!this._isActived) {
@@ -26,10 +23,16 @@ const PanelContent = React.createClass({
         className={contentCls}
         role="tabpanel"
       >
-        <div className={`${prefixCls}-content-box`}>{children}</div>
+	{isActive?<div className={`${prefixCls}-content-box`}>{children}</div>: null}
       </div>
     );
-  },
-});
+  }
+}
+
+PanelContent.propTypes = {
+  prefixCls: PropTypes.string,
+  isActive: PropTypes.bool,
+  children: PropTypes.any,
+};
 
 export default PanelContent;
