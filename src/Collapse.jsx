@@ -42,35 +42,33 @@ class Collapse extends Component {
   }
 
   onClickItem(key) {
-    return () => {
-      let activeKey = this.state.activeKey;
-      if (this.props.accordion) {
-        activeKey = activeKey[0] === key ? [] : [key];
+    let activeKey = this.state.activeKey;
+    if (this.props.accordion) {
+      activeKey = activeKey[0] === key ? [] : [key];
+    } else {
+      activeKey = [...activeKey];
+      const index = activeKey.indexOf(key);
+      const isActive = index > -1;
+      if (isActive) {
+        // remove active state
+        activeKey.splice(index, 1);
       } else {
-        activeKey = [...activeKey];
-        const index = activeKey.indexOf(key);
-        const isActive = index > -1;
-        if (isActive) {
-          // remove active state
-          activeKey.splice(index, 1);
-        } else {
-          activeKey.push(key);
-        }
+        activeKey.push(key);
       }
-      this.setActiveKey(activeKey);
-    };
+    }
+    this.setActiveKey(activeKey);
   }
 
   getItems() {
     const activeKey = this.state.activeKey;
-    const { prefixCls, accordion } = this.props;
+    const { prefixCls, accordion, destroyInactivePanel, expandIcon } = this.props;
     const newChildren = [];
 
     Children.forEach(this.props.children, (child, index) => {
       if (!child) return;
       // If there is no key provide, use the panel order as default key
       const key = child.key || String(index);
-      const header = child.props.header;
+      const { header, headerClass, disabled } = child.props;
       let isActive = false;
       if (accordion) {
         isActive = activeKey[0] === key;
@@ -81,11 +79,15 @@ class Collapse extends Component {
       const props = {
         key,
         header,
+        headerClass,
         isActive,
         prefixCls,
+        destroyInactivePanel,
         openAnimation: this.state.openAnimation,
+        accordion,
         children: child.props.children,
-        onItemClick: this.onClickItem(key).bind(this),
+        onItemClick: disabled ? null : () => this.onClickItem(key),
+        expandIcon,
       };
 
       newChildren.push(React.cloneElement(child, props));
@@ -102,13 +104,13 @@ class Collapse extends Component {
   }
 
   render() {
-    const { prefixCls, className, style } = this.props;
+    const { prefixCls, className, style, accordion } = this.props;
     const collapseClassName = classNames({
       [prefixCls]: true,
       [className]: !!className,
     });
     return (
-      <div className={collapseClassName} style={style}>
+      <div className={collapseClassName} style={style} role={accordion ? 'tablist' : null}>
         {this.getItems()}
       </div>
     );
@@ -131,12 +133,15 @@ Collapse.propTypes = {
   accordion: PropTypes.bool,
   className: PropTypes.string,
   style: PropTypes.object,
+  destroyInactivePanel: PropTypes.bool,
+  expandIcon: PropTypes.func,
 };
 
 Collapse.defaultProps = {
   prefixCls: 'rc-collapse',
   onChange() {},
   accordion: false,
+  destroyInactivePanel: false,
 };
 
 Collapse.Panel = CollapsePanel;

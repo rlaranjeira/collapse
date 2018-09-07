@@ -5,26 +5,59 @@ import PanelContent from './PanelContent';
 import Animate from 'rc-animate';
 
 class CollapsePanel extends Component {
-  handleItemClick() {
-    this.props.onItemClick();
+  handleItemClick = () => {
+    if (this.props.onItemClick) {
+      this.props.onItemClick();
+    }
+  }
+
+  handleKeyPress = (e) => {
+    if (e.key === 'Enter' || e.keyCode === 13 || e.which === 13) {
+      this.handleItemClick();
+    }
   }
 
   render() {
-    const { className, style, prefixCls, header, children, isActive, showArrow } = this.props;
-    const headerCls = `${prefixCls}-header`;
+    const {
+      className,
+      id,
+      style,
+      prefixCls,
+      header,
+      headerClass,
+      children,
+      isActive,
+      showArrow,
+      destroyInactivePanel,
+      disabled,
+      accordion,
+      forceRender,
+      expandIcon,
+    } = this.props;
+    const headerCls = classNames(`${prefixCls}-header`, {
+      [headerClass]: headerClass,
+    });
     const itemCls = classNames({
       [`${prefixCls}-item`]: true,
       [`${prefixCls}-item-active`]: isActive,
+      [`${prefixCls}-item-disabled`]: disabled,
     }, className);
+
+    let icon = null;
+    if (showArrow && typeof expandIcon === 'function') {
+      icon = React.createElement(expandIcon, { ...this.props });
+    }
     return (
-      <div className={itemCls} style={style}>
+      <div className={itemCls} style={style} id={id}>
         <div
           className={headerCls}
-          onClick={this.handleItemClick.bind(this)}
-          role="tab"
-          aria-expanded={isActive}
+          onClick={this.handleItemClick}
+          role={accordion ? 'tab' : 'button'}
+          tabIndex={disabled ? -1 : 0}
+          aria-expanded={`${isActive}`}
+          onKeyPress={this.handleKeyPress}
         >
-          {showArrow && <i className="arrow" />}
+          {showArrow && (icon || <i className="arrow" />)}
           {header}
         </div>
         <Animate
@@ -33,7 +66,13 @@ class CollapsePanel extends Component {
           component=""
           animation={this.props.openAnimation}
         >
-          <PanelContent prefixCls={prefixCls} isActive={isActive}>
+          <PanelContent
+            prefixCls={prefixCls}
+            isActive={isActive}
+            destroyInactivePanel={destroyInactivePanel}
+            forceRender={forceRender}
+            role={accordion ? 'tabpanel' : null}
+          >
             {children}
           </PanelContent>
         </Animate>
@@ -47,6 +86,7 @@ CollapsePanel.propTypes = {
     PropTypes.string,
     PropTypes.object,
   ]),
+  id: PropTypes.string,
   children: PropTypes.any,
   openAnimation: PropTypes.object,
   prefixCls: PropTypes.string,
@@ -55,16 +95,25 @@ CollapsePanel.propTypes = {
     PropTypes.number,
     PropTypes.node,
   ]),
+  headerClass: PropTypes.string,
   showArrow: PropTypes.bool,
   isActive: PropTypes.bool,
   onItemClick: PropTypes.func,
   style: PropTypes.object,
+  destroyInactivePanel: PropTypes.bool,
+  disabled: PropTypes.bool,
+  accordion: PropTypes.bool,
+  forceRender: PropTypes.bool,
+  expandIcon: PropTypes.func,
 };
 
 CollapsePanel.defaultProps = {
   showArrow: true,
   isActive: false,
-  onItemClick() {},
+  destroyInactivePanel: false,
+  onItemClick() { },
+  headerClass: '',
+  forceRender: false,
 };
 
 export default CollapsePanel;

@@ -46,9 +46,11 @@ var Collapse = require('rc-collapse');
 var Panel = Collapse.Panel;
 var React = require('react');
 var ReactDOM = require('react-dom');
+require('rc-collapse/assets/index.css');
+
 var collapse = (
   <Collapse accordion={true}>
-    <Panel header="hello">this is panel content</Panel>
+    <Panel header="hello" headerClass="my-header-class">this is panel content</Panel>
     <Panel header="title2">this is panel content2 or other</Panel>
   </Collapse>
 );
@@ -78,10 +80,22 @@ ReactDOM.render(collapse, container);
           <td>current active Panel key</td>
       </tr>
       <tr>
+        <td>className</td>
+        <td>String or object</td>
+        <th></th>
+        <td>custom className to apply</td>
+      </tr>
+      <tr>
           <td>defaultActiveKey</td>
           <td>String|Array<String></td>
           <th>null</th>
           <td>default active key</td>
+      </tr>
+      <tr>
+          <td>destroyInactivePanel</td>
+          <td>Boolean</td>
+          <th>false</th>
+          <td>If destroy the panel which not active, default false. </td>
       </tr>
       <tr>
           <td>accordion</td>
@@ -94,6 +108,12 @@ ReactDOM.render(collapse, container);
           <td>Function(key)</td>
           <th>noop</th>
           <td>called when collapse Panel is changed</td>
+      </tr>
+      <tr>
+          <td>expandIcon</td>
+          <td>(props: PanelProps) => ReactNode</td>
+          <th></th>
+          <td>specific the custom expand icon.</td>
       </tr>
     </tbody>
 </table>
@@ -125,6 +145,12 @@ If `accordion` is true, only one panel can be open.  Opening another panel will 
           <td>header content of Panel</td>
       </tr>
       <tr>
+          <td>headerClass</td>
+          <td>String</td>
+          <th>' '</th>
+          <td>custom className to apply to header</td>
+      </tr>
+      <tr>
           <td>showArrow</td>
           <td>boolean</td>
           <th>true</th>
@@ -141,6 +167,24 @@ If `accordion` is true, only one panel can be open.  Opening another panel will 
         <td>object</td>
         <th></th>
         <td>custom style</td>
+      </tr>
+      <tr>
+        <td>openAnimation</td>
+        <td>object</td>
+        <th></th>
+        <td>set the animation of open behavior, [more](https://github.com/react-component/animate#animation-format)</td>
+      </tr>
+      <tr>
+        <td>disabled</td>
+        <td>boolean</td>
+        <th>false</th>
+        <td>whether the panel is collapsible</td>
+      </tr>
+      <tr>
+        <td>forceRender</td>
+        <td>boolean</td>
+        <th>false</th>
+        <td>forced render of content in panel, not lazy render after clicking on header</td>
       </tr>
     </tbody>
 </table>
